@@ -8,6 +8,7 @@ sealed class App
   public App()
   {
     Console.CursorVisible = false;
+    _state.IsRunning = true;
     _inputHanlder = new ConsoleInputHandler();
     _scene = SetScene(_state.CurrentScene);
   }
