@@ -43,7 +43,7 @@ sealed class App
         Update();
         Render();
       } catch (Exception ex) {
-        _errorLogger.LogError(ex.Message);
+        _errorLogger.LogError(ex.ToString());
         _state.IsRunning = false;
       }
 
