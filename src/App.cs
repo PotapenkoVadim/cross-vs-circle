@@ -4,9 +4,9 @@ sealed class App
 {
   private const int FRAME_DELAY_MS = 160;
   private Scene? _scene;
-  private IUserInputHandler _inputHandler;
-  private AppState _state = new();
-  private ErrorLogger _errorLogger = new();
+  private readonly IUserInputHandler _inputHandler;
+  private readonly AppState _state = new();
+  private readonly ErrorLogger _errorLogger = new();
 
   public App()
   {
@@ -70,7 +70,7 @@ sealed class App
       AppScenes.Menu => new Menu(_state),
       AppScenes.Load => new Load(),
       AppScenes.Save => new Save(),
-      AppScenes.Playground => new Playground(),
+      AppScenes.Playground => new Playground(_state),
       _ => throw new ArgumentException("The scene could not be displayed correctly.")
     };
   }

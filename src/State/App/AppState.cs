@@ -22,4 +22,10 @@ internal class AppState: StateManager
     get => _isRunning;
     set => SetField(ref _isRunning, value);
   }
+
+  private GameState? _gameState;
+  public GameState? GameState {
+    get => _gameState;
+    set => SetField(ref _gameState, value);
+  }
 }
