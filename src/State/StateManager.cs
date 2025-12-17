@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-internal abstract class StateManager: IStateManager
+internal abstract class StateManager: INotifyPropertyChanged
 {
   private const string APP_NAME = "CROSS VS CIRCLE.";
   private const string APP_VERSION = "v0.0.1";

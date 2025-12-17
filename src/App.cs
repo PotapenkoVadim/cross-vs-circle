@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 sealed class App
 {
   private const int FRAME_DELAY_MS = 160;
@@ -11,6 +13,7 @@ sealed class App
     _state.IsRunning = true;
     _inputHandler = new ConsoleInputHandler();
     _scene = SetScene(_state.CurrentScene);
+    _state.PropertyChanged += OnStatePropertyChanged;
   }
 
   private void ProcessInput()
@@ -64,6 +67,14 @@ sealed class App
     Console.ReadKey();
   }
 
+  private void OnStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
+  {
+    if (e.PropertyName == nameof(AppState.CurrentScene))
+    {
+      _scene = SetScene(_state.CurrentScene);
+    }
+  }
+
   private Scene SetScene(AppScenes sceneVariant)
   {
     return sceneVariant switch
@@ -72,7 +83,7 @@ sealed class App
       AppScenes.Load => new Load(),
       AppScenes.Save => new Save(),
       AppScenes.Playground => new Playground(),
-      _ => throw new Exception("The scene could not be displayed correctly.")
+      _ => throw new ArgumentException("The scene could not be displayed correctly.")
     };
   }
 }

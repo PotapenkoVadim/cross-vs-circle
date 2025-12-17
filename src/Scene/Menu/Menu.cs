@@ -68,7 +68,7 @@ internal class Menu : Scene
   private void SwitchMenuItem(InputKeys? userInput)
   {
     int currentVariant = (int)_state.SelectedMenu;
-    int length = Enum.GetValues<MenuVariant>().Length - 1;
+    int length = MenuOrder.Length - 1;
     currentVariant = userInput switch
     {
       InputKeys.Down => currentVariant + 1 > length ? 0 : currentVariant + 1,
@@ -81,7 +81,22 @@ internal class Menu : Scene
 
   private void SelectMenuItem()
   {
-    // TODO: implement select menu item
-    return;
+    switch (_state.SelectedMenu)
+    {
+      case MenuVariant.START:
+        _state.CurrentScene = AppScenes.Playground;
+        break;
+      case MenuVariant.SAVE:
+        _state.CurrentScene = AppScenes.Save;
+        break;
+      case MenuVariant.LOAD:
+        _state.CurrentScene = AppScenes.Load;
+        break;
+      case MenuVariant.EXIT:
+        _state.IsRunning = false;
+        break;
+      default:
+        throw new ArgumentException($"Unknown menu variant: {_state.SelectedMenu}", nameof(_state.SelectedMenu));
+    }
   }
 }

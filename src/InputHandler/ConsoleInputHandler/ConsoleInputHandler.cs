@@ -28,6 +28,6 @@ internal class ConsoleInputHandler : IUserInputHandler
       };
     }
 
-    throw new Exception("Console input is not available.");
+    return null;
   }
 }
