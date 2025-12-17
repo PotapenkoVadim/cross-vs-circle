@@ -6,6 +6,7 @@ sealed class App
   private Scene? _scene;
   private IUserInputHandler _inputHandler;
   private AppState _state = new();
+  private ErrorLogger _errorLogger = new();
 
   public App()
   {
@@ -18,46 +19,33 @@ sealed class App
 
   private void ProcessInput()
   {
-    try
-    {
-      InputKeys? userInput = _inputHandler.InputHandler();
-      _scene?.HandleUserInput(userInput);
-    } catch
-    {
-      // TODO: handler exception
-    }
+    InputKeys? userInput = _inputHandler.InputHandler();
+    _scene?.HandleUserInput(userInput);
   }
 
   private void Update()
   {
-    try
-    {
-      _scene?.Update();
-    } catch
-    {
-      // TODO: handle exception
-    }
+    _scene?.Update();
   }
 
   private void Render()
   {
-    try
-    {
-      Console.Clear();
-      _scene?.Render();
-    } catch
-    {
-      // TODO: handle exception
-    }
+    Console.Clear();
+    _scene?.Render();
   }
 
   public void Run()
   {
     while (_state.IsRunning)
     {
-      ProcessInput();
-      Update();
-      Render();
+      try {
+        ProcessInput();
+        Update();
+        Render();
+      } catch (Exception ex) {
+        _errorLogger.LogError(ex.Message);
+        _state.IsRunning = false;
+      }
 
       Thread.Sleep(FRAME_DELAY_MS);
     }
