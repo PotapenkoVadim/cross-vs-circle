@@ -7,9 +7,25 @@ internal class Menu : Scene
   private const string SELECTED_SYMBOL = "#";
   private const string NOT_SELECTED_SYMBOL = " ";
 
+  private static readonly Dictionary<MenuVariant, string> MenuTexts = new()
+  {
+    { MenuVariant.START, START_MENU_TEXT },
+    { MenuVariant.SAVE, SAVE_MENU_TEXT },
+    { MenuVariant.LOAD, LOAD_MENU_TEXT },
+    { MenuVariant.EXIT, EXIT_MENU_TEXT }
+  };
+
+  private static readonly MenuVariant[] MenuOrder = new[]
+  {
+    MenuVariant.START,
+    MenuVariant.SAVE,
+    MenuVariant.LOAD,
+    MenuVariant.EXIT
+  };
+
   private readonly AppState _state;
 
-  public Menu(ref AppState state)
+  public Menu(AppState state)
   {
     _state = state;
   }
@@ -37,34 +53,16 @@ internal class Menu : Scene
 
   private string GetMenuText()
   {
-    return _state.SelectedMenu switch
+    var lines = MenuOrder.Select(variant =>
     {
-      MenuVariant.START => $"""
-      {SELECTED_SYMBOL}{START_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{SAVE_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{LOAD_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{EXIT_MENU_TEXT}
-      """,
-      MenuVariant.SAVE => $"""
-      {NOT_SELECTED_SYMBOL}{START_MENU_TEXT}
-      {SELECTED_SYMBOL}{SAVE_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{LOAD_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{EXIT_MENU_TEXT}
-      """,
-      MenuVariant.LOAD => $"""
-      {NOT_SELECTED_SYMBOL}{START_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{SAVE_MENU_TEXT}
-      {SELECTED_SYMBOL}{LOAD_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{EXIT_MENU_TEXT}
-      """,
-      MenuVariant.EXIT => $"""
-      {NOT_SELECTED_SYMBOL}{START_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{SAVE_MENU_TEXT}
-      {NOT_SELECTED_SYMBOL}{LOAD_MENU_TEXT}
-      {SELECTED_SYMBOL}{EXIT_MENU_TEXT}
-      """,
-      _ => throw new Exception("Menu loading error.")
-    };
+      string symbol = variant == _state.SelectedMenu 
+        ? SELECTED_SYMBOL 
+        : NOT_SELECTED_SYMBOL;
+
+      return $"{symbol}   {MenuTexts[variant]}";
+    });
+
+    return string.Join("\n", lines) + "\n";
   }
 
   private void SwitchMenuItem(InputKeys? userInput)

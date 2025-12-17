@@ -1,15 +1,15 @@
 sealed class App
 {
-  private int FRAME_DELAY_MS = 160;
+  private const int FRAME_DELAY_MS = 160;
   private Scene? _scene;
-  private IUserInputHandler _inputHanlder;
+  private IUserInputHandler _inputHandler;
   private AppState _state = new();
 
   public App()
   {
     Console.CursorVisible = false;
     _state.IsRunning = true;
-    _inputHanlder = new ConsoleInputHandler();
+    _inputHandler = new ConsoleInputHandler();
     _scene = SetScene(_state.CurrentScene);
   }
 
@@ -17,7 +17,7 @@ sealed class App
   {
     try
     {
-      InputKeys? userInput = _inputHanlder.InputHandler();
+      InputKeys? userInput = _inputHandler.InputHandler();
       _scene?.HandleUserInput(userInput);
     } catch
     {
@@ -68,7 +68,7 @@ sealed class App
   {
     return sceneVariant switch
     {
-      AppScenes.Menu => new Menu(ref _state),
+      AppScenes.Menu => new Menu(_state),
       AppScenes.Load => new Load(),
       AppScenes.Save => new Save(),
       AppScenes.Playground => new Playground(),
