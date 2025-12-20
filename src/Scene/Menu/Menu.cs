@@ -59,7 +59,7 @@ internal class Menu : Scene
         ? SELECTED_SYMBOL 
         : NOT_SELECTED_SYMBOL;
 
-      return $"{symbol}   {MenuTexts[variant]}";
+      return $"{symbol} {MenuTexts[variant]}";
     });
 
     return string.Join("\n", lines) + "\n";
