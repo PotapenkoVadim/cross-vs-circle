@@ -92,7 +92,7 @@ internal class Playground : Scene
       return;
 
     if (IsGameFinished()) {
-      // _state.GameState.GamePhase = GamePhase.Finished;
+      // TODO: Show results
       _state.CurrentScene = AppScenes.Menu;
       return;
     }
