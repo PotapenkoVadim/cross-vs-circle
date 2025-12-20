@@ -75,6 +75,8 @@ internal class Playground : Scene
   {
     if (_state.GameState is not null && _state.GameState.Board is not null) {
       Console.WriteLine($"{_state.AppName} {_state.AppVersion}\n");
+      Console.WriteLine($"Player cells: {_state.GameState.PlayerScore}");
+      Console.WriteLine($"AI cells: {_state.GameState.AiScore}\n");
       GameBoard.RenderBoard(
         _state.GameState.Board,
         _state.GameState.PlayerPosition,
@@ -88,6 +90,12 @@ internal class Playground : Scene
   {
     if (_state.GameState == null || _state.GameState.Board == null)
       return;
+
+    if (IsGameFinished()) {
+      // _state.GameState.GamePhase = GamePhase.Finished;
+      _state.CurrentScene = AppScenes.Menu;
+      return;
+    }
 
     if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves < _state.GameState.MaxMoves)
     {
@@ -179,5 +187,14 @@ internal class Playground : Scene
     var pos = GameBoard.GetRandomEmptyCell(_state.GameState!.Board!, _state.GameState!.BoardSize);
 
     return pos!.Value;
+  }
+
+  private bool IsGameFinished() {
+    var emptyCells = GameBoard.GetEmptyCells(_state.GameState!.Board!, _state.GameState!.BoardSize);
+    if (emptyCells.Count == 0) {
+      return true;
+    }
+
+    return false;
   }
 }
