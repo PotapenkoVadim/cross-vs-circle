@@ -13,6 +13,13 @@ internal class Playground : Scene
     if (_state.GameState == null || _state.GameState.Board == null)
       return;
 
+    if (IsGameFinished()) {
+      if (userInput == InputKeys.Decline)
+        _state.CurrentScene = AppScenes.Menu;
+
+      return;
+    }
+
     if (_state.GameState.Turn != Turn.Player)
       return;
 
@@ -74,6 +81,12 @@ internal class Playground : Scene
   public override void Render()
   {
     if (_state.GameState is not null && _state.GameState.Board is not null) {
+      if (IsGameFinished())
+      {
+        RenderGameFinished();
+        return;
+      }
+
       Console.WriteLine($"{_state.AppName} {_state.AppVersion}\n");
       Console.WriteLine($"Player cells: {_state.GameState.PlayerScore}");
       Console.WriteLine($"AI cells: {_state.GameState.AiScore}\n");
@@ -86,16 +99,35 @@ internal class Playground : Scene
     }
   }
 
+  private void RenderGameFinished()
+  {
+    if (_state.GameState == null)
+      return;
+
+    Console.WriteLine($"{_state.AppName} {_state.AppVersion}\n");
+    Console.WriteLine("           GAME FINISHED!\n");
+    
+    Console.WriteLine($"Player score: {_state.GameState.PlayerScore}");
+    Console.WriteLine($"AI score: {_state.GameState.AiScore}\n");
+
+    if (_state.GameState.PlayerScore > _state.GameState.AiScore)
+    {
+      Console.WriteLine("Player wins!");
+    } else if (_state.GameState.AiScore > _state.GameState.PlayerScore) {
+      Console.WriteLine("AI wins!");
+    } else {
+      Console.WriteLine("It's a draw!");
+    }
+
+    Console.WriteLine("\nPress ESC to return to menu");
+  }
+
   public override void Update()
   {
     if (_state.GameState == null || _state.GameState.Board == null)
       return;
 
-    if (IsGameFinished()) {
-      // TODO: Show results
-      _state.CurrentScene = AppScenes.Menu;
-      return;
-    }
+    if (IsGameFinished()) return;
 
     if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves < _state.GameState.MaxMoves)
     {
