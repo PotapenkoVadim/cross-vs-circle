@@ -90,7 +90,9 @@ internal class Playground : Scene
         return;
       }
 
+      var currentPlayer = _state.GameState.Turn == Turn.Player ? "Circle" : "Cross";
       Console.WriteLine($"{_state.AppName} {_state.AppVersion}\n");
+      Console.WriteLine($"{currentPlayer} move. {_state.GameState.Moves}/5 steps left.");
       Console.WriteLine($"Player cells: {_state.GameState.PlayerScore}");
       Console.WriteLine($"AI cells: {_state.GameState.AiScore}\n");
       GameBoard.RenderBoard(
@@ -99,6 +101,9 @@ internal class Playground : Scene
         _state.GameState.AiPosition,
         _state.GameState.BoardSize
       );
+
+      Console.WriteLine("\n\n\u2191, \u2193, \u2190, \u2192     character movement");
+      Console.WriteLine("ESC            return to menu");
     }
   }
 
@@ -150,8 +155,8 @@ internal class Playground : Scene
     _state.GameState.Board = new CellState[_state.GameState.BoardSize, _state.GameState.BoardSize];
     _state.GameState.Turn = Turn.Player;
     _state.GameState.Moves = 0;
-    _state.GameState.PlayerScore = 0;
-    _state.GameState.AiScore = 0;
+    _state.GameState.PlayerScore = 1;
+    _state.GameState.AiScore = 1;
 
     _state.GameState.PlayerPosition = GetRandomEmptyCell();
     GameBoard.SetCell(
