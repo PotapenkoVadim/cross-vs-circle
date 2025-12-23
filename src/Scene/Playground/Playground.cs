@@ -68,6 +68,7 @@ internal class Playground : Scene
       {
         GameBoard.SetCell(_state.GameState.Board, newX, newY, CellState.Cross, _state.GameState.BoardSize);
         _state.GameState.PlayerScore++;
+        FloodFillIsolatedCells(CellState.Cross, () =>_state.GameState.PlayerScore += 1);
       }
       
       _state.GameState.Moves++;
@@ -135,6 +136,7 @@ internal class Playground : Scene
     {
       // TODO: select ai level: _aiPlayer.MakeEasyMove(_state.GameState);
       _aiPlayer.MakeHardMove(_state.GameState);
+      FloodFillIsolatedCells(CellState.Circle, () => _state.GameState.AiScore += 1);
     } else if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves >= _state.GameState.MaxMoves)
     {
       _state.GameState.Turn = Turn.Player;
@@ -183,5 +185,65 @@ internal class Playground : Scene
     }
 
     return false;
+  }
+
+  private void FloodFillIsolatedCells(CellState player, Action increaseScrore)
+  {
+    if (_state.GameState == null || _state.GameState.Board == null) return;
+
+    for (int x = 0; x < _state.GameState.BoardSize; x++)
+    {
+      for (int y = 0; y < _state.GameState.BoardSize; y++)
+      {
+        if (GameBoard.IsOwnCell(
+          _state.GameState.Board,
+          x,
+          y,
+          player == CellState.Circle ? CellState.Cross : CellState.Circle,
+          _state.GameState.BoardSize
+        ))
+        {
+          MarkReachable(_state.GameState.Board, x, y, _state.GameState.BoardSize);
+        }
+      }
+    }
+
+    for (int x = 0; x < _state.GameState.BoardSize; x++)
+    {
+      for (int y = 0; y < _state.GameState.BoardSize; y++)
+      {
+        if (_state.GameState.Board[x, y] == CellState.Empty) {
+          _state.GameState.Board[x, y] = player;
+          increaseScrore();
+        } else if (_state.GameState.Board[x, y] == CellState.Reachable)
+        {
+          _state.GameState.Board[x, y] = CellState.Empty;
+        }
+      }
+    }
+  }
+
+  private void MarkReachable(CellState[,] board, int startX, int startY, int boardSize)
+  {
+    Stack<(int x, int y)> stack = new Stack<(int x, int y)>();
+    stack.Push((startX, startY));
+
+    while (stack.Count > 0)
+    {
+      var (x, y) = stack.Pop();
+
+      var neighbors = GameBoard.GetNeighbors(x, y, boardSize);
+
+      foreach (var neighbor in neighbors)
+      {
+        if (
+          GameBoard.IsValidPosition(neighbor.x, neighbor.y, boardSize) &&
+          GameBoard.IsEmpty(board, neighbor.x, neighbor.y, boardSize)
+        ) {
+          GameBoard.SetCell(board, neighbor.x, neighbor.y, CellState.Reachable, boardSize);
+          stack.Push((neighbor.x, neighbor.y));
+        }
+      }
+    }
   }
 }

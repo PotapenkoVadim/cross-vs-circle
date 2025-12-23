@@ -2,5 +2,6 @@ public enum CellState
 {
   Empty,
   Cross,
-  Circle
+  Circle,
+  Reachable
 }
