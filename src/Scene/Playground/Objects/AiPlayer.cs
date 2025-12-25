@@ -94,10 +94,12 @@ internal class AiPlayer
     var queue = new Queue<(int x, int y)>();
     queue.Enqueue(gameState.AiPosition);
 
-    var cameFrom = new Dictionary<(int x, int y), (int x, int y)>();
-    cameFrom[gameState.AiPosition] = gameState.AiPosition;
+    var cameFrom = new Dictionary<(int x, int y), (int x, int y)>
+    {
+      [gameState.AiPosition] = gameState.AiPosition
+    };
 
-    (int dx, int dy)[] directions = {(-1, 0), (1, 0), (0, 1), (0, -1)};
+    (int dx, int dy)[] directions = [(-1, 0), (1, 0), (0, 1), (0, -1)];
     (int x, int y)? target = null;
 
     while (queue.Count > 0)
@@ -110,10 +112,10 @@ internal class AiPlayer
         break;
       }
 
-      foreach (var dir in directions)
+      foreach (var (dx, dy) in directions)
       {
-        int nx = current.x + dir.dx;
-        int ny = current.y + dir.dy;
+        int nx = current.x + dx;
+        int ny = current.y + dy;
         var neighbor = (nx, ny);
 
         if (

@@ -102,8 +102,8 @@ internal class Playground : Scene
         _state.GameState.BoardSize
       );
 
-      Console.WriteLine("\n\n\u2191, \u2193, \u2190, \u2192     character movement");
-      Console.WriteLine("ESC            return to menu");
+      Console.WriteLine("\n\n\u2190 \u2192 \u2191\u2193      character movement");
+      Console.WriteLine("ESC         return to menu");
     }
   }
 
@@ -192,7 +192,7 @@ internal class Playground : Scene
     return false;
   }
 
-  private void FloodFillIsolatedCells(CellState player, Action increaseScrore)
+  private void FloodFillIsolatedCells(CellState player, Action increaseScore)
   {
     if (_state.GameState == null || _state.GameState.Board == null) return;
 
@@ -219,7 +219,7 @@ internal class Playground : Scene
       {
         if (_state.GameState.Board[x, y] == CellState.Empty) {
           _state.GameState.Board[x, y] = player;
-          increaseScrore();
+          increaseScore();
         } else if (_state.GameState.Board[x, y] == CellState.Reachable)
         {
           _state.GameState.Board[x, y] = CellState.Empty;
@@ -230,7 +230,7 @@ internal class Playground : Scene
 
   private void MarkReachable(CellState[,] board, int startX, int startY, int boardSize)
   {
-    Stack<(int x, int y)> stack = new Stack<(int x, int y)>();
+    Stack<(int x, int y)> stack = new();
     stack.Push((startX, startY));
 
     while (stack.Count > 0)
