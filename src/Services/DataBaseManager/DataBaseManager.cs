@@ -53,6 +53,10 @@ internal class DataBaseManager: IDisposable
     }
   }
 
+  public int GetVersion() => Convert.ToInt32(ExecuteScalar("PRAGMA user_version"));
+
+  public void SetVersion(int version) => ExecuteNonQuery($"PRAGMA user_version = {version}");
+
   private SqliteCommand CreateCommand(string query, Dictionary<string, object>? parameters)
   {
     var command = _connection.CreateCommand();

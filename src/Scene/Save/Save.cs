@@ -1,5 +1,12 @@
 internal class Save : Scene
 {
+  private readonly GameLoader _loader = new();
+  private readonly AppState _state;
+  public Save(AppState state)
+  {
+    _state = state;
+  }
+
   public override void HandleUserInput(InputKeys? userInput)
   {
     throw new NotImplementedException();

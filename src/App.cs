@@ -68,8 +68,8 @@ sealed class App
     return sceneVariant switch
     {
       AppScenes.Menu => new Menu(_state),
-      AppScenes.Load => new Load(),
-      AppScenes.Save => new Save(),
+      AppScenes.Load => new Load(_state),
+      AppScenes.Save => new Save(_state),
       AppScenes.Playground => new Playground(_state),
       _ => throw new ArgumentException("The scene could not be displayed correctly.")
     };
