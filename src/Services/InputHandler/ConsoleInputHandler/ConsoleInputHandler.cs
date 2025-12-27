@@ -24,6 +24,8 @@ internal class ConsoleInputHandler : IUserInputHandler
         ConsoleKey.Backspace => InputKeys.Decline,
         ConsoleKey.N => InputKeys.Decline,
 
+        ConsoleKey.F5 => InputKeys.QuickSave,
+
         _ => null
       };
     }

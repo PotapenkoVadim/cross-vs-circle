@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 internal class GameLoader
 {
   private const string DB_FILE = "database.db";
@@ -11,7 +13,31 @@ internal class GameLoader
     ApplyMigrations();
   }
 
-  public void Save(GameState state) {}
+  public void Save(GameState state)
+  {
+    if (state.Board is null)
+      throw new ArgumentException("Cannot save a state with a null board");
+    
+    var parameters = new Dictionary<string, object>
+    {
+      {"@board", MatrixToBlob(state.Board)},
+      {"@player_x", state.PlayerPosition.x},
+      {"@player_y", state.PlayerPosition.y},
+      {"@ai_x", state.AiPosition.x},
+      {"@ai_y", state.AiPosition.y},
+      {"@turn", state.Turn},
+      {"@player_score", state.PlayerScore},
+      {"@ai_score", state.AiScore}
+    };
+
+    _dbManager.ExecuteNonQuery(@"
+    INSERT INTO GameState (
+      board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score
+    ) VALUES (
+      @board, @player_x, @player_y, @ai_x, @ai_y, @turn, @player_score, @ai_score
+    );
+    ", parameters);
+  }
 
   public void Load() {}
 
@@ -45,5 +71,12 @@ internal class GameLoader
 
     if (currentVersion != TARGET_VERSION)
       throw new Exception($"Migration failed: current version {currentVersion}");
+  }
+
+  private byte[] MatrixToBlob(CellState[,] matrix)
+  {
+    ReadOnlySpan<CellState> charSpan = MemoryMarshal.CreateReadOnlySpan(ref matrix[0, 0], 100);
+
+    return MemoryMarshal.AsBytes(charSpan).ToArray();
   }
 }

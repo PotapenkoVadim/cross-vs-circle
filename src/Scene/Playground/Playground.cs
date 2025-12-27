@@ -45,6 +45,9 @@ internal class Playground : Scene
       case InputKeys.Decline:
         _state.CurrentScene = AppScenes.Menu;
         break;
+      case InputKeys.QuickSave:
+        _state.CurrentScene = AppScenes.Save;
+        break;
     }
   }
 
@@ -57,23 +60,23 @@ internal class Playground : Scene
     int newY = _state.GameState.PlayerPosition.y + deltaY;
 
     if (
-      GameBoard.IsValidPosition(newX, newY, _state.GameState.BoardSize) &&
-      !GameBoard.IsOpponentCell(_state.GameState.Board, newX, newY, CellState.Cross, _state.GameState.BoardSize) &&
-      _state.GameState.Moves < _state.GameState.MaxMoves
+      GameBoard.IsValidPosition(newX, newY, GameState.BoardSize) &&
+      !GameBoard.IsOpponentCell(_state.GameState.Board, newX, newY, CellState.Cross, GameState.BoardSize) &&
+      _state.GameState.Moves < GameState.MaxMoves
     )
     {
       _state.GameState.PlayerPosition = (newX, newY);
       
-      if (GameBoard.IsEmpty(_state.GameState.Board, newX, newY, _state.GameState.BoardSize))
+      if (GameBoard.IsEmpty(_state.GameState.Board, newX, newY, GameState.BoardSize))
       {
-        GameBoard.SetCell(_state.GameState.Board, newX, newY, CellState.Cross, _state.GameState.BoardSize);
+        GameBoard.SetCell(_state.GameState.Board, newX, newY, CellState.Cross, GameState.BoardSize);
         _state.GameState.PlayerScore++;
         FloodFillIsolatedCells(CellState.Cross, () =>_state.GameState.PlayerScore += 1);
       }
       
       _state.GameState.Moves++;
       
-      if (_state.GameState.Moves >= _state.GameState.MaxMoves)
+      if (_state.GameState.Moves >= GameState.MaxMoves)
       {
         _state.GameState.Turn = Turn.AI;
         _state.GameState.Moves = 0;
@@ -99,10 +102,11 @@ internal class Playground : Scene
         _state.GameState.Board,
         _state.GameState.PlayerPosition,
         _state.GameState.AiPosition,
-        _state.GameState.BoardSize
+        GameState.BoardSize
       );
 
       Console.WriteLine("\n\n\u2190 \u2192 \u2191\u2193      character movement");
+      Console.WriteLine("F5          save the current game");
       Console.WriteLine("ESC         return to menu");
     }
   }
@@ -137,12 +141,12 @@ internal class Playground : Scene
 
     if (IsGameFinished()) return;
 
-    if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves < _state.GameState.MaxMoves)
+    if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves < GameState.MaxMoves)
     {
       // TODO: select ai level: _aiPlayer.MakeEasyMove(_state.GameState);
       _aiPlayer.MakeHardMove(_state.GameState);
       FloodFillIsolatedCells(CellState.Circle, () => _state.GameState.AiScore += 1);
-    } else if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves >= _state.GameState.MaxMoves)
+    } else if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves >= GameState.MaxMoves)
     {
       _state.GameState.Turn = Turn.Player;
       _state.GameState.Moves = 0;
@@ -150,9 +154,10 @@ internal class Playground : Scene
   }
 
   private void InitializeGameState() {
-    if (_state.GameState == null) return;
+    if (_state.GameState is null) return;
+    if (_state.GameState.Board is not null) return;
     
-    _state.GameState.Board = new CellState[_state.GameState.BoardSize, _state.GameState.BoardSize];
+    _state.GameState.Board = new CellState[GameState.BoardSize, GameState.BoardSize];
     _state.GameState.Turn = Turn.Player;
     _state.GameState.Moves = 0;
     _state.GameState.PlayerScore = 1;
@@ -164,7 +169,7 @@ internal class Playground : Scene
       _state.GameState.PlayerPosition.x,
       _state.GameState.PlayerPosition.y,
       CellState.Cross,
-      _state.GameState.BoardSize
+      GameState.BoardSize
     );
 
     _state.GameState.AiPosition = GetRandomEmptyCell();
@@ -173,18 +178,18 @@ internal class Playground : Scene
       _state.GameState.AiPosition.x,
       _state.GameState.AiPosition.y,
       CellState.Circle,
-      _state.GameState.BoardSize
+      GameState.BoardSize
     );
   }
   
   private (int x, int y) GetRandomEmptyCell() {
-    var pos = GameBoard.GetRandomEmptyCell(_state.GameState!.Board!, _state.GameState!.BoardSize);
+    var pos = GameBoard.GetRandomEmptyCell(_state.GameState!.Board!, GameState.BoardSize);
 
     return pos!.Value;
   }
 
   private bool IsGameFinished() {
-    var emptyCells = GameBoard.GetEmptyCells(_state.GameState!.Board!, _state.GameState!.BoardSize);
+    var emptyCells = GameBoard.GetEmptyCells(_state.GameState!.Board!, GameState.BoardSize);
     if (emptyCells.Count == 0) {
       return true;
     }
@@ -196,26 +201,26 @@ internal class Playground : Scene
   {
     if (_state.GameState == null || _state.GameState.Board == null) return;
 
-    for (int x = 0; x < _state.GameState.BoardSize; x++)
+    for (int x = 0; x < GameState.BoardSize; x++)
     {
-      for (int y = 0; y < _state.GameState.BoardSize; y++)
+      for (int y = 0; y < GameState.BoardSize; y++)
       {
         if (GameBoard.IsOwnCell(
           _state.GameState.Board,
           x,
           y,
           player == CellState.Circle ? CellState.Cross : CellState.Circle,
-          _state.GameState.BoardSize
+          GameState.BoardSize
         ))
         {
-          MarkReachable(_state.GameState.Board, x, y, _state.GameState.BoardSize);
+          MarkReachable(_state.GameState.Board, x, y, GameState.BoardSize);
         }
       }
     }
 
-    for (int x = 0; x < _state.GameState.BoardSize; x++)
+    for (int x = 0; x < GameState.BoardSize; x++)
     {
-      for (int y = 0; y < _state.GameState.BoardSize; y++)
+      for (int y = 0; y < GameState.BoardSize; y++)
       {
         if (_state.GameState.Board[x, y] == CellState.Empty) {
           _state.GameState.Board[x, y] = player;

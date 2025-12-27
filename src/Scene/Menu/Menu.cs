@@ -1,6 +1,6 @@
-internal class Menu : Scene
+internal class Menu(AppState state) : Scene
 {
-  private const string START_MENU_TEXT = "   START   ";
+  private const string START_MENU_TEXT = "   NEW GAME   ";
   private const string LOAD_MENU_TEXT = "   LOAD   ";
   private const string SAVE_MENU_TEXT = "   SAVE   ";
   private const string EXIT_MENU_TEXT = "   EXIT   ";
@@ -23,13 +23,8 @@ internal class Menu : Scene
     MenuVariant.EXIT
   };
 
-  private readonly AppState _state;
+  private readonly AppState _state = state;
 
-  public Menu(AppState state)
-  {
-    _state = state;
-  }
-  
   public override void HandleUserInput(InputKeys? userInput)
   {
     if (userInput == InputKeys.Accept) {
@@ -84,6 +79,7 @@ internal class Menu : Scene
     switch (_state.SelectedMenu)
     {
       case MenuVariant.START:
+        _state.GameState = null;
         _state.CurrentScene = AppScenes.Playground;
         break;
       case MenuVariant.SAVE:

@@ -7,16 +7,16 @@ internal class AiPlayer
   {
     var neighbors = GameBoard.GetNeighbors(
       gameState.AiPosition.x, 
-      gameState.AiPosition.y, 
-      gameState.BoardSize
+      gameState.AiPosition.y,
+      GameState.BoardSize
     );
     
     var emptyCells = neighbors.Where(cell => 
-      GameBoard.IsEmpty(gameState.Board!, cell.x, cell.y, gameState.BoardSize)
+      GameBoard.IsEmpty(gameState.Board!, cell.x, cell.y, GameState.BoardSize)
     ).ToList();
 
     var ownCells = neighbors.Where(cell => 
-      GameBoard.IsOwnCell(gameState.Board!, cell.x, cell.y, CellState.Circle, gameState.BoardSize)
+      GameBoard.IsOwnCell(gameState.Board!, cell.x, cell.y, CellState.Circle, GameState.BoardSize)
     ).ToList();
 
     (int x, int y)? targetCell = null;
@@ -39,9 +39,9 @@ internal class AiPlayer
 
     gameState.AiPosition = targetCell.Value;
 
-    if (GameBoard.IsEmpty(gameState.Board!, targetCell.Value.x, targetCell.Value.y, gameState.BoardSize))
+    if (GameBoard.IsEmpty(gameState.Board!, targetCell.Value.x, targetCell.Value.y, GameState.BoardSize))
     {
-      GameBoard.SetCell(gameState.Board!, targetCell.Value.x, targetCell.Value.y, CellState.Circle, gameState.BoardSize);
+      GameBoard.SetCell(gameState.Board!, targetCell.Value.x, targetCell.Value.y, CellState.Circle, GameState.BoardSize);
       gameState.AiScore++;
     }
 
@@ -50,14 +50,14 @@ internal class AiPlayer
 
   public void MakeHardMove(GameState gameState)
   {
-    if (gameState.Moves == gameState.MaxMoves)
+    if (gameState.Moves == GameState.MaxMoves)
     {
       gameState.Turn = Turn.Player;
       gameState.Moves = 0;
       return;
     }
 
-    if (ShouldInitPath(gameState.BoardSize, gameState.Board!))
+    if (ShouldInitPath(GameState.BoardSize, gameState.Board!))
     {
       _path = FindNearestEmptyCell(gameState);
     }
@@ -67,9 +67,9 @@ internal class AiPlayer
       (int x, int y) nextMove = _path.Pop();
 
       gameState.AiPosition = nextMove;
-      if (GameBoard.IsEmpty(gameState.Board!, nextMove.x, nextMove.y, gameState.BoardSize))
+      if (GameBoard.IsEmpty(gameState.Board!, nextMove.x, nextMove.y, GameState.BoardSize))
       {
-        GameBoard.SetCell(gameState.Board!, nextMove.x, nextMove.y, CellState.Circle, gameState.BoardSize);
+        GameBoard.SetCell(gameState.Board!, nextMove.x, nextMove.y, CellState.Circle, GameState.BoardSize);
         gameState.AiScore++;
       }
 
@@ -106,7 +106,7 @@ internal class AiPlayer
     {
       var current = queue.Dequeue();
 
-      if (GameBoard.IsEmpty(gameState.Board!, current.x, current.y, gameState.BoardSize))
+      if (GameBoard.IsEmpty(gameState.Board!, current.x, current.y, GameState.BoardSize))
       {
         target = current;
         break;
@@ -119,9 +119,9 @@ internal class AiPlayer
         var neighbor = (nx, ny);
 
         if (
-          nx >= 0 && nx < gameState.BoardSize &&
-          ny >= 0 && ny < gameState.BoardSize &&
-          !GameBoard.IsOpponentCell(gameState.Board!, nx, ny, CellState.Circle, gameState.BoardSize) &&
+          nx >= 0 && nx < GameState.BoardSize &&
+          ny >= 0 && ny < GameState.BoardSize &&
+          !GameBoard.IsOpponentCell(gameState.Board!, nx, ny, CellState.Circle, GameState.BoardSize) &&
           !cameFrom.ContainsKey(neighbor)
         )
         {

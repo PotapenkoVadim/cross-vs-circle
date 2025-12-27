@@ -1,9 +1,9 @@
 internal class GameState: StateManager {
   private const int BOARD_SIZE = 10;
-  public int BoardSize => BOARD_SIZE;
+  public static int BoardSize => BOARD_SIZE;
 
   private const int MAX_MOVES = 5;
-  public int MaxMoves => MAX_MOVES;
+  public static int MaxMoves => MAX_MOVES;
 
   private CellState[,]? _board;
   public CellState[,]? Board {
