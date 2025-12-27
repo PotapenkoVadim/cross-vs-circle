@@ -105,9 +105,9 @@ internal class Playground : Scene
         GameState.BoardSize
       );
 
-      Console.WriteLine("\n\n\u2190 \u2192 \u2191\u2193      character movement");
-      Console.WriteLine("F5          save the current game");
-      Console.WriteLine("ESC         return to menu");
+      Console.WriteLine("\n\n[\u2190 \u2192 \u2191\u2193]      character movement");
+      Console.WriteLine("[F5]          save the current game");
+      Console.WriteLine("[ESC]         return to menu");
     }
   }
 
@@ -131,7 +131,7 @@ internal class Playground : Scene
       Console.WriteLine("It's a draw!");
     }
 
-    Console.WriteLine("\nPress ESC to return to menu");
+    Console.WriteLine("\nPress [ESC] to return to menu");
   }
 
   public override void Update()

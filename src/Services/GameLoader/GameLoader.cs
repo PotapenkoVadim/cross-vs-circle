@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Microsoft.Data.Sqlite;
 
 internal class GameLoader
 {
@@ -39,7 +40,13 @@ internal class GameLoader
     ", parameters);
   }
 
-  public void Load() {}
+  public List<Dictionary<string, GameState>> Load()
+  {
+    string query = "SELECT board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score, created_at FROM GameState";
+    IEnumerable<Dictionary<string, GameState>> results = _dbManager.Select(query, MapRowToGameState);
+
+    return [.. results];
+  }
 
   private void ApplyMigrations()
   {
@@ -78,5 +85,26 @@ internal class GameLoader
     ReadOnlySpan<CellState> charSpan = MemoryMarshal.CreateReadOnlySpan(ref matrix[0, 0], 100);
 
     return MemoryMarshal.AsBytes(charSpan).ToArray();
+  }
+
+  private Dictionary<string, GameState> MapRowToGameState(SqliteDataReader reader)
+  {
+    byte[] blob = reader.GetFieldValue<byte[]>(reader.GetOrdinal("board"));
+    CellState[,] board = new CellState[GameState.BoardSize, GameState.BoardSize];
+    Buffer.BlockCopy(blob, 0, board, 0, 200);
+
+    var state = new GameState
+    {
+      Board = board,
+      PlayerPosition = (reader.GetInt32(1), reader.GetInt32(2)),
+      AiPosition = (reader.GetInt32(3), reader.GetInt32(4)),
+      Turn = (Turn)reader.GetInt32(5),
+      PlayerScore = reader.GetInt32(6),
+      AiScore = reader.GetInt32(7)
+    };
+    
+    var result = new Dictionary<string, GameState> {{reader.GetString(8), state}};
+
+    return result;
   }
 }

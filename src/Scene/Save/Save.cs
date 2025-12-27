@@ -38,9 +38,9 @@ internal class Save(AppState state) : Scene
     Console.WriteLine($"AI Score: {_state.GameState.AiScore}");
     Console.WriteLine($"Current turn: {currentTurn}\n\n");
 
-    Console.WriteLine("ENTER   confirm and return to game");
-    Console.WriteLine("F5      return to game");
-    Console.WriteLine("ESC     return to menu");
+    Console.WriteLine("[ENTER]   confirm and return to game");
+    Console.WriteLine("[F5]      return to game");
+    Console.WriteLine("[ESC]     return to menu");
   }
 
   public override void Update()
