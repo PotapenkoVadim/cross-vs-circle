@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 internal class GameLoader
 {
   private const string DB_FILE = "database.db";
-  private const int TARGET_VERSION = 1;
+  private const int TARGET_VERSION = 2;
   private readonly DataBaseManager _dbManager;
   public GameLoader()
   {
@@ -28,21 +28,22 @@ internal class GameLoader
       {"@ai_y", state.AiPosition.y},
       {"@turn", state.Turn},
       {"@player_score", state.PlayerScore},
-      {"@ai_score", state.AiScore}
+      {"@ai_score", state.AiScore},
+      {"@moves", state.Moves}
     };
 
     _dbManager.ExecuteNonQuery(@"
     INSERT INTO GameState (
-      board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score
+      board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score, moves
     ) VALUES (
-      @board, @player_x, @player_y, @ai_x, @ai_y, @turn, @player_score, @ai_score
+      @board, @player_x, @player_y, @ai_x, @ai_y, @turn, @player_score, @ai_score, @moves
     );
     ", parameters);
   }
 
   public List<Dictionary<string, GameState>> Load()
   {
-    string query = "SELECT board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score, created_at FROM GameState";
+    string query = "SELECT board, player_x, player_y, ai_x, ai_y, turn, player_score, ai_score, moves, created_at FROM GameState";
     IEnumerable<Dictionary<string, GameState>> results = _dbManager.Select(query, MapRowToGameState);
 
     return [.. results];
@@ -63,10 +64,10 @@ internal class GameLoader
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         board BLOB NOT NULL,
-        player_x INTEGER NOT NULL CHECK(player_x > 0 AND player_x <= 10),
-        player_y INTEGER NOT NULL CHECK(player_y > 0 AND player_y <= 10),
-        ai_x INTEGER NOT NULL CHECK(ai_x > 0 AND ai_x <= 10),
-        ai_y INTEGER NOT NULL CHECK(ai_y > 0 AND ai_y <= 10),
+        player_x INTEGER NOT NULL CHECK(player_x >= 0 AND player_x < 10),
+        player_y INTEGER NOT NULL CHECK(player_y >= 0 AND player_y < 10),
+        ai_x INTEGER NOT NULL CHECK(ai_x >= 0 AND ai_x < 10),
+        ai_y INTEGER NOT NULL CHECK(ai_y >= 0 AND ai_y < 10),
         turn INTEGER NOT NULL CHECK (turn IN (1, 0)),
         player_score INTEGER NOT NULL CHECK(player_score > 0),
         ai_score INTEGER NOT NULL CHECK(ai_score > 0)
@@ -74,6 +75,14 @@ internal class GameLoader
       ");
       _dbManager.SetVersion(1);
       currentVersion = 1;
+    }
+
+    if (currentVersion < 2)
+    {
+      // MIGRRATION: Add column moves to GameState table
+      _dbManager.ExecuteNonQuery("ALTER TABLE GameState ADD COLUMN moves INTEGER;");
+      _dbManager.SetVersion(2);
+      currentVersion = 2;
     }
 
     if (currentVersion != TARGET_VERSION)
@@ -100,10 +109,11 @@ internal class GameLoader
       AiPosition = (reader.GetInt32(3), reader.GetInt32(4)),
       Turn = (Turn)reader.GetInt32(5),
       PlayerScore = reader.GetInt32(6),
-      AiScore = reader.GetInt32(7)
+      AiScore = reader.GetInt32(7),
+      Moves = reader.GetInt32(8)
     };
     
-    var result = new Dictionary<string, GameState> {{reader.GetString(8), state}};
+    var result = new Dictionary<string, GameState> {{reader.GetString(9), state}};
 
     return result;
   }

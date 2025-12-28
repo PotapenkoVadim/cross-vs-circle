@@ -51,12 +51,12 @@ internal class Load : Scene
 
   private string GetRelativeTime(DateTime date)
   {
-    var ts = DateTime.Now - date;
+    var ts = DateTime.UtcNow - date;
 
     if (ts.TotalMinutes < 1) return "Just now";
     if (ts.TotalMinutes < 60) return $"{(int)ts.TotalMinutes}m ago";
     if (ts.TotalHours < 24) return $"{(int)ts.TotalHours}h ago";
 
-    return date.ToShortDateString();
+    return date.ToLocalTime().ToShortDateString();
   }
 }
