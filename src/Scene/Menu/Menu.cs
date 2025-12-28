@@ -1,8 +1,8 @@
 internal class Menu(AppState state) : Scene
 {
   private const string START_MENU_TEXT = "   NEW GAME   ";
-  private const string LOAD_MENU_TEXT = "   LOAD   ";
-  private const string SAVE_MENU_TEXT = "   SAVE   ";
+  private const string LOAD_MENU_TEXT = "   LOAD GAME   ";
+  private const string SETTINGS_MENU_TEXT = "   SETTINGS   ";
   private const string EXIT_MENU_TEXT = "   EXIT   ";
   private const string SELECTED_SYMBOL = "#";
   private const string NOT_SELECTED_SYMBOL = " ";
@@ -10,16 +10,16 @@ internal class Menu(AppState state) : Scene
   private static readonly Dictionary<MenuVariant, string> MenuTexts = new()
   {
     { MenuVariant.START, START_MENU_TEXT },
-    { MenuVariant.SAVE, SAVE_MENU_TEXT },
     { MenuVariant.LOAD, LOAD_MENU_TEXT },
+    { MenuVariant.SETTINGS, SETTINGS_MENU_TEXT },
     { MenuVariant.EXIT, EXIT_MENU_TEXT }
   };
 
   private static readonly MenuVariant[] MenuOrder = new[]
   {
     MenuVariant.START,
-    MenuVariant.SAVE,
     MenuVariant.LOAD,
+    MenuVariant.SETTINGS,
     MenuVariant.EXIT
   };
 
@@ -82,8 +82,8 @@ internal class Menu(AppState state) : Scene
         _state.GameState = null;
         _state.CurrentScene = AppScenes.Playground;
         break;
-      case MenuVariant.SAVE:
-        _state.CurrentScene = AppScenes.Save;
+      case MenuVariant.SETTINGS:
+        _state.CurrentScene = AppScenes.Settings;
         break;
       case MenuVariant.LOAD:
         _state.CurrentScene = AppScenes.Load;

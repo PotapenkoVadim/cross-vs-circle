@@ -71,6 +71,7 @@ sealed class App
       AppScenes.Load => new Load(_state),
       AppScenes.Save => new Save(_state),
       AppScenes.Playground => new Playground(_state),
+      AppScenes.Settings => new Settings(_state),
       _ => throw new ArgumentException("The scene could not be displayed correctly.")
     };
   }

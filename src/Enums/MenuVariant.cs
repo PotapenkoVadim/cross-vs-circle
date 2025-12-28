@@ -1,7 +1,7 @@
 public enum MenuVariant
 {
   START,
-  SAVE,
   LOAD,
+  SETTINGS,
   EXIT
 }
