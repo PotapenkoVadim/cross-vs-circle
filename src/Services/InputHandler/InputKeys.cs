@@ -6,5 +6,6 @@ public enum InputKeys
   Right,
   Accept,
   Decline,
-  QuickSave
+  QuickSave,
+  Delete
 }

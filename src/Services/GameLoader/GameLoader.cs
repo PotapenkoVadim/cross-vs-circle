@@ -117,4 +117,11 @@ internal class GameLoader
 
     return result;
   }
+
+  public void DeleteSave(string date)
+  {
+    string query = "DELETE FROM GameState WHERE created_at = @created";
+    var parameters = new Dictionary<string, object> {{"@created", date}};
+    _dbManager.ExecuteNonQuery(query, parameters);
+  }
 }

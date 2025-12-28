@@ -26,6 +26,8 @@ internal class ConsoleInputHandler : IUserInputHandler
 
         ConsoleKey.F5 => InputKeys.QuickSave,
 
+        ConsoleKey.Delete => InputKeys.Delete,
+
         _ => null
       };
     }
