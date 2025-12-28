@@ -91,31 +91,40 @@ internal class GameLoader
 
   private byte[] MatrixToBlob(CellState[,] matrix)
   {
-    ReadOnlySpan<CellState> charSpan = MemoryMarshal.CreateReadOnlySpan(ref matrix[0, 0], 100);
+    int size = GameState.BoardSize * GameState.BoardSize;
+    ReadOnlySpan<CellState> span = MemoryMarshal.CreateReadOnlySpan(ref matrix[0, 0], size);
 
-    return MemoryMarshal.AsBytes(charSpan).ToArray();
+    return MemoryMarshal.AsBytes(span).ToArray();
   }
 
   private Dictionary<string, GameState> MapRowToGameState(SqliteDataReader reader)
   {
-    byte[] blob = reader.GetFieldValue<byte[]>(reader.GetOrdinal("board"));
+    byte[] blob = (byte[])reader["board"];
     CellState[,] board = new CellState[GameState.BoardSize, GameState.BoardSize];
-    Buffer.BlockCopy(blob, 0, board, 0, 200);
+
+    int bytesToCopy = Math.Min(blob.Length, GameState.BoardSize * GameState.BoardSize * sizeof(CellState));
+    Buffer.BlockCopy(blob, 0, board, 0, bytesToCopy);
 
     var state = new GameState
     {
       Board = board,
-      PlayerPosition = (reader.GetInt32(1), reader.GetInt32(2)),
-      AiPosition = (reader.GetInt32(3), reader.GetInt32(4)),
-      Turn = (Turn)reader.GetInt32(5),
-      PlayerScore = reader.GetInt32(6),
-      AiScore = reader.GetInt32(7),
-      Moves = reader.GetInt32(8)
+      PlayerPosition = (
+        reader.GetInt32(reader.GetOrdinal("player_x")),
+        reader.GetInt32(reader.GetOrdinal("player_y"))
+      ),
+      AiPosition = (
+        reader.GetInt32(reader.GetOrdinal("ai_x")),
+        reader.GetInt32(reader.GetOrdinal("ai_y"))
+      ),
+      Turn = (Turn)(reader.GetInt32(reader.GetOrdinal("turn"))),
+      PlayerScore = reader.GetInt32(reader.GetOrdinal("player_score")),
+      AiScore = reader.GetInt32(reader.GetOrdinal("ai_score")),
+      Moves = reader.GetInt32(reader.GetOrdinal("moves"))
     };
-    
-    var result = new Dictionary<string, GameState> {{reader.GetString(9), state}};
 
-    return result;
+    string createdAt = reader.GetString(reader.GetOrdinal("created_at"));
+
+    return new Dictionary<string, GameState>{{createdAt, state}};
   }
 
   public void DeleteSave(string date)
