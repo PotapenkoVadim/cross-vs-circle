@@ -1,12 +1,12 @@
 internal class Playground : Scene
 {
   private readonly AppState _state;
-  private readonly AiPlayer _aiPlayer;
+  private readonly IAiPlayer _aiPlayer;
 
   public Playground(AppState state) {
     _state = state;
     _state.GameState ??= new GameState();
-    _aiPlayer = new AiPlayer();
+    _aiPlayer = new AiPlayerFactory(_state.SettingState!.DifficultyVariant);
     
     InitializeGameState();
   }
@@ -143,8 +143,7 @@ internal class Playground : Scene
 
     if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves < GameState.MaxMoves)
     {
-      // TODO: select ai level: _aiPlayer.MakeEasyMove(_state.GameState);
-      _aiPlayer.MakeHardMove(_state.GameState);
+      _aiPlayer.MakeMove(_state.GameState);
       FloodFillIsolatedCells(CellState.Circle, () => _state.GameState.AiScore += 1);
     } else if (_state.GameState.Turn == Turn.AI && _state.GameState.Moves >= GameState.MaxMoves)
     {

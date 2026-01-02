@@ -1,82 +1,57 @@
-// TODO: Necessary to implement factory for different AIs if the game is going to support different difficulty levels.
-// TODO: AiPlayerFactory(GameLevels levels)
-internal class AiPlayer
+// INFO: shortest path algorithm. algorithm finds nearest empty cell and moves to the cell.
+internal class MediumAiPlayer : IAiPlayer
 {
   private Stack<(int x, int y)>? _path = new();
-  public void MakeEasyMove(GameState gameState)
+
+  public void MakeMove(GameState state)
   {
-    var neighbors = GameBoard.GetNeighbors(
-      gameState.AiPosition.x, 
-      gameState.AiPosition.y,
-      GameState.BoardSize
-    );
-    
-    var emptyCells = neighbors.Where(cell => 
-      GameBoard.IsEmpty(gameState.Board!, cell.x, cell.y, GameState.BoardSize)
-    ).ToList();
-
-    var ownCells = neighbors.Where(cell => 
-      GameBoard.IsOwnCell(gameState.Board!, cell.x, cell.y, CellState.Circle, GameState.BoardSize)
-    ).ToList();
-
-    (int x, int y)? targetCell = null;
-    Random random = new();
-
-    if (emptyCells.Count > 0)
+    if (state.Moves == GameState.MaxMoves)
     {
-      targetCell = emptyCells[random.Next(emptyCells.Count)];
-    } else if (ownCells.Count > 0)
-    {
-      targetCell = ownCells[random.Next(ownCells.Count)];
-    }
-
-    if (!targetCell.HasValue)
-    {
-      gameState.Turn = Turn.Player;
-      gameState.Moves = 0;
+      state.Turn = Turn.Player;
+      state.Moves = 0;
       return;
     }
 
-    gameState.AiPosition = targetCell.Value;
-
-    if (GameBoard.IsEmpty(gameState.Board!, targetCell.Value.x, targetCell.Value.y, GameState.BoardSize))
+    if (ShouldInitPath(GameState.BoardSize, state.Board!))
     {
-      GameBoard.SetCell(gameState.Board!, targetCell.Value.x, targetCell.Value.y, CellState.Circle, GameState.BoardSize);
-      gameState.AiScore++;
-    }
-
-    gameState.Moves++;
-  }
-
-  public void MakeHardMove(GameState gameState)
-  {
-    if (gameState.Moves == GameState.MaxMoves)
-    {
-      gameState.Turn = Turn.Player;
-      gameState.Moves = 0;
-      return;
-    }
-
-    if (ShouldInitPath(GameState.BoardSize, gameState.Board!))
-    {
-      _path = FindNearestEmptyCell(gameState);
+      _path = FindNearestEmptyCell(state);
     }
 
     if (_path != null && _path.Count > 0)
     {
       (int x, int y) nextMove = _path.Pop();
 
-      gameState.AiPosition = nextMove;
-      if (GameBoard.IsEmpty(gameState.Board!, nextMove.x, nextMove.y, GameState.BoardSize))
+      state.AiPosition = nextMove;
+      if (GameBoard.IsEmpty(state.Board!, nextMove.x, nextMove.y, GameState.BoardSize))
       {
-        GameBoard.SetCell(gameState.Board!, nextMove.x, nextMove.y, CellState.Circle, GameState.BoardSize);
-        gameState.AiScore++;
+        GameBoard.SetCell(state.Board!, nextMove.x, nextMove.y, CellState.Circle, GameState.BoardSize);
+        state.AiScore++;
       }
 
-      gameState.Moves++;
+      state.Moves++;
     } else
     {
-      MakeEasyMove(gameState);
+      var neighbors = GameBoard.GetNeighbors(
+        state.AiPosition.x, 
+        state.AiPosition.y,
+        GameState.BoardSize
+      );
+
+      var ownCells = neighbors.Where(cell => 
+        GameBoard.IsOwnCell(state.Board!, cell.x, cell.y, CellState.Circle, GameState.BoardSize)
+      ).ToList();
+
+      Random random = new();
+      (int x, int y) targetCell = ownCells[random.Next(ownCells.Count)];
+      state.AiPosition = targetCell;
+
+      if (GameBoard.IsEmpty(state.Board!, targetCell.x, targetCell.y, GameState.BoardSize))
+      {
+        GameBoard.SetCell(state.Board!, targetCell.x, targetCell.y, CellState.Circle, GameState.BoardSize);
+        state.AiScore++;
+      }
+
+      state.Moves++;
     }
   }
 
