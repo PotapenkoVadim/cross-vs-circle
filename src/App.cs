@@ -7,6 +7,7 @@ sealed class App
   private readonly IUserInputHandler _inputHandler;
   private readonly AppState _state = new();
   private readonly ErrorLogger _errorLogger = new();
+  private readonly ILoader<SettingState> _settingLoader = new SettingsLoader();
 
   public App()
   {
@@ -72,17 +73,17 @@ sealed class App
       AppScenes.Load => new Load(_state),
       AppScenes.Save => new Save(_state),
       AppScenes.Playground => new Playground(_state),
-      AppScenes.Settings => new Settings(_state),
+      AppScenes.Settings => new Settings(_state, _settingLoader),
       _ => throw new ArgumentException("The scene could not be displayed correctly.")
     };
   }
 
   private void InitializeSettings()
   {
-    // TODO: load values from table
+    var settingsState = _settingLoader.Load().First();
     _state.SettingState = new SettingState
     {
-      DifficultyVariant = DifficultyVariant.Easy
+      DifficultyVariant = settingsState["settings"].DifficultyVariant
     };
   }
 }
