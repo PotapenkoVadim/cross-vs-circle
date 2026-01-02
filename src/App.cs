@@ -14,6 +14,7 @@ sealed class App
     _state.IsRunning = true;
     _inputHandler = new ConsoleInputHandler();
     _scene = SetScene(_state.CurrentScene);
+    InitializeSettings();
     _state.PropertyChanged += OnStatePropertyChanged;
   }
 
@@ -73,6 +74,15 @@ sealed class App
       AppScenes.Playground => new Playground(_state),
       AppScenes.Settings => new Settings(_state),
       _ => throw new ArgumentException("The scene could not be displayed correctly.")
+    };
+  }
+
+  private void InitializeSettings()
+  {
+    // TODO: load values from table
+    _state.SettingState = new SettingState
+    {
+      DifficultyVariant = DifficultyVariant.Easy
     };
   }
 }

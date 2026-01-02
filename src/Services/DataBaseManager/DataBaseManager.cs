@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 internal class DataBaseManager: IDisposable
 {
   private readonly SqliteConnection _connection;
-  private const int TARGET_VERSION = 2;
+  private const int TARGET_VERSION = 3;
   private const string DB_FILE = "database.db";
   private bool _dispose = false;
 
@@ -78,6 +78,20 @@ internal class DataBaseManager: IDisposable
       ExecuteNonQuery("ALTER TABLE GameState ADD COLUMN moves INTEGER DEFAULT 0;");
       SetVersion(2);
       currentVersion = 2;
+    }
+
+    if (currentVersion < 3)
+    {
+      // MIGRATION: Create Settings table
+      ExecuteNonQuery(@"
+        CREATE TABLE IF NOT EXISTS Settings (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          difficulty_variant TEXT NOT NULL CHECK(difficulty_variant IN ('easy', 'medium'))
+        );
+      ");
+      ExecuteNonQuery(@"INSERT INTO Settings (difficulty_variant) VALUES ('easy');");
+      SetVersion(3);
+      currentVersion = 3;
     }
 
     if (currentVersion != TARGET_VERSION)

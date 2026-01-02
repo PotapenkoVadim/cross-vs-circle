@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Data.Sqlite;
 
-internal class GameLoader
+internal class GameLoader: ILoader<GameState>
 {
   public void Save(GameState state)
   {

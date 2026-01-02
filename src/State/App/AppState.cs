@@ -28,4 +28,11 @@ internal class AppState: StateManager
     get => _gameState;
     set => SetField(ref _gameState, value);
   }
+
+  private SettingState? _settingsState;
+  public SettingState? SettingState
+  {
+    get => _settingsState;
+    set => SetField(ref _settingsState, value);
+  }
 }

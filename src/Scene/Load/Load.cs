@@ -1,6 +1,6 @@
 internal class Load : Scene
 {
-  private readonly GameLoader _loader = new();
+  private readonly ILoader<GameState> _loader = new GameLoader();
   private readonly AppState _state;
   private List<Dictionary<string, GameState>> _savingStates;
 
